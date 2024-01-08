@@ -22,6 +22,7 @@ class _HeaderOrderScreenState extends State<HeaderOrderScreen> {
     super.initState();
     _fetchRestaurants();
     _getAddressFromLatLng();
+    setState(() {});
   }
 
   ApiService _apiService = ApiService();
@@ -41,30 +42,25 @@ class _HeaderOrderScreenState extends State<HeaderOrderScreen> {
 
   List<Restaurants> restList = [];
   Future<void> _fetchRestaurants() async {
-    try {
-      double userLat = widget.location.latitude!;
-      double userLng = widget.location.longitude!;
-      final result = await _apiService.getRestaurants(userLat, userLng);
-      List<Restaurants> temp = [];
-      print(result['data']);
-      result['data'].forEach((value) {
-        temp.add(Restaurants(
-          discount: value['discount'].toDouble(),
-          distance: value['distance'].toDouble(),
-          imageUrl: value['primary_image'].toString(),
-          rating: value['rating'].toDouble(), // Corrected toDouble()
-          name: value['name'].toString(), // Corrected toString()
-          tags: value['tags'].toString(),
-        ));
-      });
-      setState(() {
-        restList = temp;
-        list = restList;
-      });
-    } catch (e) {
-      // Handle errors
-      print('Error: $e');
-    }
+    double userLat = widget.location.latitude!;
+    double userLng = widget.location.longitude!;
+    final result = await _apiService.getRestaurants(userLat, userLng);
+    List<Restaurants> temp = [];
+    print(result['data']);
+    result['data'].forEach((value) {
+      temp.add(Restaurants(
+        discount: value['discount'].toDouble(),
+        distance: value['distance'].toDouble(),
+        imageUrl: value['primary_image'].toString(),
+        rating: value['rating'].toDouble(), // Corrected toDouble()
+        name: value['name'].toString(), // Corrected toString()
+        tags: value['tags'].toString(),
+      ));
+    });
+    setState(() {
+      restList = temp;
+      list = restList;
+    });
   }
 
   List<Restaurants> list = [];
@@ -173,7 +169,7 @@ class _HeaderOrderScreenState extends State<HeaderOrderScreen> {
                       ),
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 15),
-                      hintText: "Search Food Items",
+                      hintText: "Search Food Restaurants",
                     ),
                   ),
                 ),
@@ -185,7 +181,11 @@ class _HeaderOrderScreenState extends State<HeaderOrderScreen> {
                 )
               ],
             ),
-
+            const Divider(),
+            Text(
+              "Nearby Restaurants(${list.length} )",
+              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+            ),
             Expanded(
               child: ListView.builder(
                 itemCount: list.length,
